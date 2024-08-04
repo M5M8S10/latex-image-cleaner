@@ -1,5 +1,3 @@
-# latex-image-path-extractor
-Python program to extract image paths from LaTeX documents by parsing \includegraphics-command 
 # LaTeX Image Path Extractor
 
 ## Overview
