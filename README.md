@@ -7,7 +7,6 @@ designed to analyze LaTeX documents and extract all file names referenced by ```
 This tool is intended to help users manage and verify image assets in their LaTeX projects
 to remove unused files that sometimes pile up when working (LaTeX) documents.
 
-
 ## Features
 
 - Extracts paths to image files from LaTeX documents using the `\includegraphics` command.
@@ -50,8 +49,10 @@ Mark files from the comparison that are not used by ```\includegraphics``` in th
 
    ```bash
    git clone https://github.com/M5M8S10/latex-image-path-extractor
+2. Navigate to project directory:
+   ```bash
    cd latex-image-path-extractor
-2. Run the script and follow instructions:
+3. Run the script and follow instructions in the command line interface (see [Usage](#usage)):
    ```bash
    python main.py
 
