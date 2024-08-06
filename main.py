@@ -30,6 +30,9 @@ while True:  # loops until user input is valid
 #  in a given directory (user input).
 paths_to_images = extract_image_paths(path_latex_doc)
 
+# make unix-like path notation from LaTeX-doc system conform
+paths_to_images = [os.path.normpath(path) for path in paths_to_images]
+
 # output found image-paths
 print_header(f"Found {len(paths_to_images)} '\\includegraphics' "
              f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
