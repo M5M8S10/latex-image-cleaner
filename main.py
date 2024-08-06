@@ -10,7 +10,7 @@ def print_header(text: str):
 # get path from user
 while True:  # loops until user input is valid
     path_latex_doc = input("\nPath to tex file: ")
-    path_latex_doc = os.path.normpath(path_latex_doc)  # platform independent TODO: test if needed
+    path_latex_doc = os.path.normpath(path_latex_doc)  # make platform independent
     # make relative paths absolute:
     if not os.path.isabs(path_latex_doc):  # is relative path?
         path_latex_doc = os.path.abspath(path_latex_doc)
@@ -30,6 +30,9 @@ while True:  # loops until user input is valid
 #  in a given directory (user input).
 paths_to_images = extract_image_paths(path_latex_doc)
 
+# make unix-like path notation from LaTeX-doc system conform
+paths_to_images = [os.path.normpath(path) for path in paths_to_images]
+
 # output found image-paths
 print_header(f"Found {len(paths_to_images)} '\\includegraphics' "
              f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
@@ -38,7 +41,7 @@ print_header(f"Found {len(paths_to_images)} '\\includegraphics' "
 # get path to directory where images of LaTeX document are stored:
 while True:  # loops until user input is valid
     path_to_image_dir = input("\nPath to image directory: ")
-    path_to_image_dir = os.path.normpath(path_to_image_dir)  # platform independent TODO: test if needed
+    path_to_image_dir = os.path.normpath(path_to_image_dir)  # make platform independent
     # make relative paths absolute:
     if not os.path.isabs(path_to_image_dir):  # is relative path?
         path_to_image_dir = os.path.abspath(path_to_image_dir)
