@@ -1,5 +1,5 @@
 import os
-from project_utils import extract_image_paths, list_files_recursive
+from project_utils import extract_referenced_files, list_files_recursive
 
 
 def print_header(text: str):
@@ -28,18 +28,18 @@ while True:  # loops until user input is valid
 # ALTERNATIVE: maybe it is better to list every image reference (also duplicates) with line number (dictionary) and
 #  filter out duplicates/current-path_latex_doc-notation only when user wants to remove unreferenced images
 #  in a given directory (user input).
-paths_to_images = extract_image_paths(path_latex_doc)
+referenced_file_paths = extract_referenced_files(path_latex_doc)
 
 # make path notation from LaTeX-doc (unix-like) platform dependant, to fit with user inputs
 # (also removes 'current folder'-notation, i.e. "./" ; optional in LaTeX documents):
-paths_to_images = [os.path.normpath(path) for path in paths_to_images]
+referenced_file_paths = [os.path.normpath(path) for path in referenced_file_paths]
 # remove duplicates:
-paths_to_images = list(set(paths_to_images))  # do this after normalizing of paths
+referenced_file_paths = list(set(referenced_file_paths))  # do this after normalizing of paths
 
 # output found image-paths
-print_header(f"Found {len(paths_to_images)} '\\includegraphics' "
+print_header(f"Found {len(referenced_file_paths)} '\\includegraphics' "
              f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
-[print(path_to_image) for path_to_image in paths_to_images]
+[print(path_to_image) for path_to_image in referenced_file_paths]
 
 # get path to directory where images of LaTeX document are stored:
 while True:  # loops until user input is valid
@@ -64,27 +64,27 @@ files = list_files_recursive(path_to_image_dir)
 print_header(f"Found {len(files)} file(s) in directory '{path_to_image_dir}':")
 [print(file) for file in files]
 
-# make paths to images used in the LaTeX-document absolute, if relative
-# (assuming images referenced in LaTeX are in a subdirectory within the directory of the LaTeX document)
+# make referenced image paths in the LaTeX-document absolute
+# (assuming images referenced in LaTeX are in a subdirectory within the directory of the LaTeX document):
 # TODO: take into account when relative file paths go up a directory, e.g. '../..'
 # TODO: take into account the optional '\graphicspath{ {./path/to/images/} }-LaTeX-command
-for idx in range(len(paths_to_images)):
-    if not os.path.isabs(paths_to_images[idx]):  # is relative path
-        absolute_path = os.path.join(os.path.dirname(path_latex_doc), paths_to_images[idx])
+for idx in range(len(referenced_file_paths)):
+    if not os.path.isabs(referenced_file_paths[idx]):  # is relative path
+        absolute_path = os.path.join(os.path.dirname(path_latex_doc), referenced_file_paths[idx])
         # check if making paths in LaTeX document absolute is plausible
         if os.path.exists(absolute_path):
-            paths_to_images[idx] = absolute_path
+            referenced_file_paths[idx] = absolute_path
         else:
             # TODO: proper error handling
             RED = "\033[31m"
             RESET = "\033[0m"
-            TEXT = f"Conversion to absolute paths failed for reference '{paths_to_images[idx]}'"
+            TEXT = f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"
             print(f"{RED}{TEXT}{RESET}")
 
 # Compare list of image paths to list of files in given directory (supposedly image dir):
 files_not_referenced = list()
 for file in files:  # generate list of not referenced files:
-    if file not in paths_to_images:
+    if file not in referenced_file_paths:
         files_not_referenced.append(file)
 
 # print list of not referenced files:

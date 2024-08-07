@@ -4,7 +4,7 @@ from typing import List
 
 
 # document parsing related:
-def extract_image_paths(
+def extract_referenced_files(
         latex_file_path: str,
 ) -> List[str]:
     """
