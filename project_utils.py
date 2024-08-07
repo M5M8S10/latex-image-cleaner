@@ -6,13 +6,9 @@ from typing import List
 # document parsing related:
 def extract_image_paths(
         latex_file_path: str,
-        ignore_current_path_in_pattern: bool = True,
-        ignore_duplicates: bool = True
 ) -> List[str]:
     """
     :param latex_file_path: path/to/file.tex
-    :param ignore_current_path_in_pattern: excludes optional './'-notation at the beginning of image paths in output.
-    :param ignore_duplicates: only lists path once, in case of multiple references to the same image path.
     :return: list of paths to images used as reference for 'includegraphics{...}' in given LaTeX-document.
     """
 
@@ -28,12 +24,6 @@ def extract_image_paths(
         # search for '\includegraphics' command and extract paths to images
         image_paths = includegraphics_pattern.findall(latex_content)
 
-    # remove 'current folder'-notation, since it is optional in LaTeX (NOTE: do this before removing duplicates)
-    if ignore_current_path_in_pattern:
-        image_paths = [path.lstrip("./") for path in image_paths]
-    # remove duplicates paths
-    if ignore_duplicates:
-        image_paths = list(set(image_paths))
     return image_paths
 
 

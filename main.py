@@ -30,8 +30,11 @@ while True:  # loops until user input is valid
 #  in a given directory (user input).
 paths_to_images = extract_image_paths(path_latex_doc)
 
-# make unix-like path notation from LaTeX-doc system conform
+# make path notation from LaTeX-doc (unix-like) platform dependant, to fit with user inputs
+# (also removes 'current folder'-notation, i.e. "./" ; optional in LaTeX documents):
 paths_to_images = [os.path.normpath(path) for path in paths_to_images]
+# remove duplicates:
+paths_to_images = list(set(paths_to_images))  # do this after normalizing of paths
 
 # output found image-paths
 print_header(f"Found {len(paths_to_images)} '\\includegraphics' "
