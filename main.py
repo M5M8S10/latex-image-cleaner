@@ -1,5 +1,5 @@
 import os
-from project_utils import extract_referenced_files, list_files_recursive
+from project_utils import extract_referenced_files, list_files_recursive, open_in_file_browser
 
 
 def print_header(text: str):
@@ -92,3 +92,63 @@ print_header(f"List of {len(files_not_referenced)} of {len(files)} file(s) withi
              f"'{os.path.basename(path_to_image_dir)}'-directory "
              f"are not referenced in the LaTeX-document '{os.path.basename(path_latex_doc)}':")
 [print(file) for file in files_not_referenced]
+
+files_not_referenced = [
+    dict(
+        index=idx,
+        marking=None,
+        path=files_not_referenced[idx]
+    ) for idx in range(len(files_not_referenced))
+]
+
+
+# TODO: Add colors
+print("*** Commands ***")
+print("G: Go to referenced file")
+print("D: Delete referenced file")
+print("Q: Quit")
+while True:
+    match input("What now>"):
+        case "G":
+            marking = "GOTO"
+            break
+        case "D":
+            marking = "DELETE"
+            break
+        case "Q":
+            quit()
+
+while True:
+    for file in files_not_referenced:
+        print(
+            f"{file['index']}: "
+            f"[{file['marking']}] "
+            f"{file['path']}"
+        )
+    print("*** Commands ***")
+    print(f"Select file by number (0-{len(files_not_referenced)-1})")
+    print("A: Select all files")
+    print(f"{marking[0]}: {marking} marked files")
+    print("Q: Quit")
+
+    while True:
+        user_input = input(f"{marking}>>")
+        if user_input.isnumeric():
+            if int(user_input) in range(len(files_not_referenced)):
+                files_not_referenced[int(user_input)]["marking"] = marking
+                break
+        elif user_input == "A":
+            for file in files_not_referenced:
+                file["marking"] = marking
+            break
+        elif user_input == marking[0]:
+            for file in files_not_referenced:
+                if file["marking"] == "GOTO":
+                    open_in_file_browser(os.path.dirname(file["path"]))
+                if file["marking"] == "DELETE":
+                    # TODO: make seperate function with exception handling (for future gui)
+                    os.remove(file["path"])  # cross-platform command
+            quit()
+        elif user_input == "Q":
+            quit()
+

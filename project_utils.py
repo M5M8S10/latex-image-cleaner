@@ -1,6 +1,8 @@
 import re
 import os
 from typing import List
+import platform
+import subprocess
 
 
 # document parsing related:
@@ -40,3 +42,15 @@ def list_files_recursive(directory: str) -> List[str] | None:
             all_files.append(file_path)
 
     return all_files
+
+
+def open_in_file_browser(path: str):
+    """Opens path in file browser. file browser is platform dependant."""
+    if platform.system() == 'Windows':
+        subprocess.run(['explorer', os.path.normpath(path)])
+    elif platform.system() == 'Darwin':
+        subprocess.run(['open', path])
+    elif platform.system() == 'Linux':
+        subprocess.run(['xdg-open', path])
+    else:
+        raise OSError("Unsupported operating system")
