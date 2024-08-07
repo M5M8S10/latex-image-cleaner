@@ -5,7 +5,7 @@
 The **LaTeX Image Path Extractor** is a Python script
 designed to analyze LaTeX documents and extract all file names referenced by ```\includegraphics``` within the document.
 This tool is intended to help users manage and verify image assets in their LaTeX projects
-to remove unused files that sometimes pile up when working (LaTeX) documents.
+to remove unused files that sometimes pile up when working on (LaTeX) documents.
 
 ## Features
 
@@ -27,7 +27,7 @@ Allow users to identify and mark image files for deletion that are not reference
 
 1. **Extract Image Paths**
 Run the script to extract image paths (```path/to/file```)
-used by ```\includegraphics[options]{path/to/file}``` from a LaTeX document (provided by passed path).
+used by ```\includegraphics[options]{path/to/file.ext}``` from a LaTeX document (provided by passed path).
 2. **Compare Files**:
 Use the follow-up comparison feature to identify unused image files
 by providing a path to a directory where all the images included in the LaTeX document are stored.<br>
@@ -37,11 +37,11 @@ and shows the differences.
 Mark files from the comparison that are not used by ```\includegraphics``` in the LaTeX document for deletion.
 
 ## Limitations
-- The program only parses paths used by ```\includegraphics```-command
+- Only parses paths used by ```\includegraphics```-command
+- Does not work with multiline ```\includegraphics```-commands
 - Image paths of out-commented ```\includegraphics```-commands count as included
 - All file types are shown by the comparison-feature, i.e. not only image files like
 ```eps```, ```pdf```, ```jpeg```, ```png```, etc. (keep that in mind when deleting files!).
-- Program only tested under Linux
 
 ## Installation
 
