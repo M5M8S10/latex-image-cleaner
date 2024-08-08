@@ -54,3 +54,26 @@ def open_in_file_browser(path: str):
         subprocess.run(['xdg-open', path])
     else:
         raise OSError("Unsupported operating system")
+
+
+def remove_file(file_path: str) -> None:
+    """
+    Removes the specified file if it exists.
+
+    :param file_path: The path to the file to be removed.
+    """
+    try:
+        # Check if the file exists
+        if os.path.isfile(file_path):
+            # Remove the file
+            os.remove(file_path)    # cross-platform command
+            print(f"File '{file_path}' has been removed.")
+        else:
+            print(f"File '{file_path}' does not exist.")
+    except Exception as e:
+        print(f"An error occurred while trying to remove the file: {e}")
+
+
+# module tests
+if __name__ == '__main__':
+    remove_file("invalid/path/that/does/certainly/not/exists/on/my/or/any/other/machine")

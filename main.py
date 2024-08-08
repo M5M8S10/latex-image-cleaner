@@ -1,5 +1,5 @@
 import os
-from project_utils import extract_referenced_files, list_files_recursive, open_in_file_browser
+from project_utils import extract_referenced_files, list_files_recursive, open_in_file_browser, remove_file
 
 
 def print_header(text: str):
@@ -146,8 +146,7 @@ while True:
                 if file["marking"] == "GOTO":
                     open_in_file_browser(os.path.dirname(file["path"]))
                 if file["marking"] == "DELETE":
-                    # TODO: make seperate function with exception handling (for future gui)
-                    os.remove(file["path"])  # cross-platform command
+                    remove_file(file["path"])
             quit()
         elif user_input == "Q":
             quit()
