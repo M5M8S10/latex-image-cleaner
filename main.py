@@ -85,6 +85,10 @@ for idx in range(len(referenced_file_paths)):
 # Marking user marking
 while True:  # loops until quit
 
+    # color definitions for print-function:
+    TEXT_BOLD = "\033[1m"  # ANSI escape code for white text
+    TEXT_RESET = "\033[0m"  # ANSI escape code to reset text color
+
     # refresh list of files (in case files have been deleted; see below)
     files = list_files_recursive(path_to_image_dir)
     # generate list of not referenced files
@@ -108,14 +112,12 @@ while True:  # loops until quit
     # print dict. of unreferenced files:
     [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
 
-
-    # TODO: Add colors
-    print("*** Commands ***")
+    print(f"\n{TEXT_BOLD}*** Commands ***{TEXT_RESET}")
     print("G: Go to referenced file")
     print("D: Delete referenced file")
     print("Q: Quit")
     while True:
-        match input("What now>"):
+        match input(f"{TEXT_BOLD}What now>{TEXT_RESET}"):
             case "G":
                 marking = "GOTO"
                 break
@@ -129,14 +131,14 @@ while True:  # loops until quit
     while not exit_selection:
         # print dict. of unreferenced files:
         [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
-        print("*** Commands ***")
-        print(f"Select file by number (0-{len(files_not_referenced)-1})")
+        print(f"\n{TEXT_BOLD}*** Commands ***{TEXT_RESET}")
+        print(f"0-{len(files_not_referenced)-1}: Select file by number")
         print("A: Select all files")
         print(f"{marking[0]}: {marking} marked files")
         print("Q: Quit")
 
         while True:
-            user_input = input(f"{marking}>>")
+            user_input = input(f"{TEXT_BOLD}{marking}>>{TEXT_RESET}")
             if user_input.isnumeric():
                 if int(user_input) in range(len(files_not_referenced)):
                     files_not_referenced[int(user_input)]["marking"] = marking
