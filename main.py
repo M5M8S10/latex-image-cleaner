@@ -81,66 +81,77 @@ for idx in range(len(referenced_file_paths)):
             TEXT = f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"
             print(f"{RED}{TEXT}{RESET}")
 
-# generate list of not referenced files (diff of files in given - supposedly image - dir and found paths in document):
-files_not_referenced = [file for file in files if file not in referenced_file_paths]
 
-# print list of not referenced files:
-print_header(f"List of {len(files_not_referenced)} of {len(files)} file(s) within "
-             f"'{os.path.basename(path_to_image_dir)}'-directory "
-             f"are not referenced in the LaTeX-document '{os.path.basename(path_latex_doc)}':")
-[print(file) for file in files_not_referenced]
+# Marking user marking
+while True:  # loops until quit
 
-files_not_referenced = [
-    dict(
-        index=idx,
-        marking=None,
-        path=files_not_referenced[idx]
-    ) for idx in range(len(files_not_referenced))
-]
+    # refresh list of files (in case files have been deleted; see below)
+    files = list_files_recursive(path_to_image_dir)
+    # generate list of not referenced files
+    # (diff of files in given - supposedly image - dir and found paths in document):
+    files_not_referenced = [file for file in files if file not in referenced_file_paths]
 
+    # print list of not referenced files:
+    print_header(f"List of {len(files_not_referenced)} of {len(files)} file(s) within "
+                 f"'{os.path.basename(path_to_image_dir)}'-directory "
+                 f"are not referenced in the LaTeX-document '{os.path.basename(path_latex_doc)}':")
 
-# TODO: Add colors
-print("*** Commands ***")
-print("G: Go to referenced file")
-print("D: Delete referenced file")
-print("Q: Quit")
-while True:
-    match input("What now>"):
-        case "G":
-            marking = "GOTO"
-            break
-        case "D":
-            marking = "DELETE"
-            break
-        case "Q":
-            quit()
+    # Make dictionary of diff for markings (user input):
+    files_not_referenced = [
+        dict(
+            index=idx,
+            marking=None,
+            path=files_not_referenced[idx]
+        ) for idx in range(len(files_not_referenced))
+    ]
 
-while True:
     # print dict. of unreferenced files:
     [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
+
+
+    # TODO: Add colors
     print("*** Commands ***")
-    print(f"Select file by number (0-{len(files_not_referenced)-1})")
-    print("A: Select all files")
-    print(f"{marking[0]}: {marking} marked files")
+    print("G: Go to referenced file")
+    print("D: Delete referenced file")
     print("Q: Quit")
-
     while True:
-        user_input = input(f"{marking}>>")
-        if user_input.isnumeric():
-            if int(user_input) in range(len(files_not_referenced)):
-                files_not_referenced[int(user_input)]["marking"] = marking
+        match input("What now>"):
+            case "G":
+                marking = "GOTO"
                 break
-        elif user_input == "A":
-            for file in files_not_referenced:
-                file["marking"] = marking
-            break
-        elif user_input == marking[0]:
-            for file in files_not_referenced:
-                if file["marking"] == "GOTO":
-                    open_in_file_browser(os.path.dirname(file["path"]))
-                if file["marking"] == "DELETE":
-                    remove_file(file["path"])
-            quit()
-        elif user_input == "Q":
-            quit()
+            case "D":
+                marking = "DELETE"
+                break
+            case "Q":
+                quit()
 
+    exit_selection = False
+    while not exit_selection:
+        # print dict. of unreferenced files:
+        [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
+        print("*** Commands ***")
+        print(f"Select file by number (0-{len(files_not_referenced)-1})")
+        print("A: Select all files")
+        print(f"{marking[0]}: {marking} marked files")
+        print("Q: Quit")
+
+        while True:
+            user_input = input(f"{marking}>>")
+            if user_input.isnumeric():
+                if int(user_input) in range(len(files_not_referenced)):
+                    files_not_referenced[int(user_input)]["marking"] = marking
+                    break
+            elif user_input == "A":
+                for file in files_not_referenced:
+                    file["marking"] = marking
+                break
+            elif user_input == marking[0]:
+                for file in files_not_referenced:
+                    if file["marking"] == "GOTO":
+                        open_in_file_browser(os.path.dirname(file["path"]))
+                    if file["marking"] == "DELETE":
+                        remove_file(file["path"])
+                exit_selection = True  # go back to marking ("What now"-input loop)
+                break
+            elif user_input == "Q":
+                quit()
