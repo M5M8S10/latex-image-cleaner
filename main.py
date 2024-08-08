@@ -81,11 +81,8 @@ for idx in range(len(referenced_file_paths)):
             TEXT = f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"
             print(f"{RED}{TEXT}{RESET}")
 
-# Compare list of image paths to list of files in given directory (supposedly image dir):
-files_not_referenced = list()
-for file in files:  # generate list of not referenced files:
-    if file not in referenced_file_paths:
-        files_not_referenced.append(file)
+# generate list of not referenced files (diff of files in given - supposedly image - dir and found paths in document):
+files_not_referenced = [file for file in files if file not in referenced_file_paths]
 
 # print list of not referenced files:
 print_header(f"List of {len(files_not_referenced)} of {len(files)} file(s) within "
@@ -119,12 +116,8 @@ while True:
             quit()
 
 while True:
-    for file in files_not_referenced:
-        print(
-            f"{file['index']}: "
-            f"[{file['marking']}] "
-            f"{file['path']}"
-        )
+    # print dict. of unreferenced files:
+    [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
     print("*** Commands ***")
     print(f"Select file by number (0-{len(files_not_referenced)-1})")
     print("A: Select all files")
