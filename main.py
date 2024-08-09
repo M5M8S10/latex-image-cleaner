@@ -1,5 +1,9 @@
 import os
-from project_utils import extract_referenced_files, list_files_recursive, open_in_file_browser, remove_file
+from project_utils import extract_referenced_files
+from project_utils import list_files_recursive
+from project_utils import open_in_file_browser
+from project_utils import remove_file
+from project_utils import print_operation_info
 
 
 def print_header(text: str):
@@ -130,7 +134,7 @@ while True:  # loops until quit
     ]
 
     # print dict. of unreferenced files:
-    [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
+    print_operation_info(files_not_referenced)
 
     print(text_bold('\n*** Commands ***'))
     print(f"{text_initial_yellow('l')}: Mark files to open {text_initial_yellow('location')} in file manager")
@@ -150,7 +154,7 @@ while True:  # loops until quit
     exit_selection = False
     while not exit_selection:
         # print dict. of unreferenced files:
-        [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
+        print_operation_info(files_not_referenced)
 
         print(text_bold('\n*** Commands ***'))
         print(f"{text_initial_yellow('0')}-{text_yellow(f'{len(files_not_referenced)-1}')}: Select file by number")

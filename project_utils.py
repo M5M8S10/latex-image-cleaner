@@ -1,6 +1,6 @@
 import re
 import os
-from typing import List
+from typing import List, Dict
 import platform
 import subprocess
 
@@ -66,12 +66,26 @@ def remove_file(file_path: str) -> None:
         # Check if the file exists
         if os.path.isfile(file_path):
             # Remove the file
-            os.remove(file_path)    # cross-platform command
+            os.remove(file_path)  # cross-platform command
             print(f"File '{file_path}' has been removed.")
         else:
             print(f"File '{file_path}' does not exist.")
     except Exception as e:
         print(f"An error occurred while trying to remove the file: {e}")
+
+
+# right adjusted print:
+def print_operation_info(operation_infos: List[Dict]) -> None:
+    """prints dictionary with 'index', 'marking' and 'path' keys in tabular, formatted form."""
+    # calculate  max width of 'index' to vertically align entries:
+    max_width = max(len(str(item['index'])) for item in operation_infos)
+    # print via list comprehension
+    [
+        print(
+            f"{str(item['index']).rjust(max_width)}: "  # index right adjusted
+            f"[{item['marking']}] "  # marking in square brackets
+            f"{item['path']}"  # path as is
+        ) for item in operation_infos]
 
 
 # module tests
