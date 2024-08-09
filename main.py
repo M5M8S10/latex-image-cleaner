@@ -1,15 +1,37 @@
 import os
 from project_utils import extract_referenced_files, list_files_recursive, open_in_file_browser, remove_file
 
-# color definitions for print-function:
-TEXT_BLD = "\033[1m"  # ANSI escape code for bold text
-TEXT_YEL = "\033[33m"  # ANSI escape code for yellow text
-TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
-
 
 def print_header(text: str):
     """print header: prints parameter 'text' and underlines it with dashes."""
     print('\n' + text, '\n' + '-'*len(text))
+
+
+def text_bold(text: str) -> str:
+    TEXT_BLD = "\033[1m"  # ANSI escape code for bold text
+    TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
+    return f"{TEXT_BLD}{text}{TEXT_RST}"
+
+
+def text_yellow(text: str) -> str:
+    """colors string yellow"""
+    TEXT_YEL = "\033[33m"  # ANSI escape code for yellow text
+    TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
+    return f"{TEXT_YEL}{text}{TEXT_RST}"
+
+
+def text_initial_yellow(text: str) -> str:
+    """colors the first letter of the string yellow"""
+    TEXT_YEL = "\033[33m"  # ANSI escape code for yellow text
+    TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
+    return f"{TEXT_YEL}{text[0]}{TEXT_RST}{text[1:]}"
+
+
+def text_red(text: str) -> str:
+    """colors string red"""
+    TEXT_RED = "\033[31m"  # ANSI escape code for yellow text
+    TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
+    return f"{TEXT_RED}{text}{TEXT_RST}"
 
 
 # get path from user
@@ -81,15 +103,11 @@ for idx in range(len(referenced_file_paths)):
             referenced_file_paths[idx] = absolute_path
         else:
             # TODO: proper error handling
-            RED = "\033[31m"
-            RESET = "\033[0m"
-            TEXT = f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"
-            print(f"{RED}{TEXT}{RESET}")
+            print(text_red(f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"))
 
 
 # Marking user marking
 while True:  # loops until quit
-
 
     # refresh list of files (in case files have been deleted; see below)
     files = list_files_recursive(path_to_image_dir)
@@ -114,12 +132,12 @@ while True:  # loops until quit
     # print dict. of unreferenced files:
     [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
 
-    print(f"\n{TEXT_BLD}*** Commands ***{TEXT_RST}")
-    print(f"{TEXT_YEL}l{TEXT_RST}: Mark files to open their {TEXT_YEL}l{TEXT_RST}ocation in the file manager")
-    print(f"{TEXT_YEL}d{TEXT_RST}: Mark files for {TEXT_YEL}d{TEXT_RST}eletion")
-    print(f"{TEXT_YEL}q{TEXT_RST}: {TEXT_YEL}Q{TEXT_RST}uit application")
+    print(text_bold('\n*** Commands ***'))
+    print(f"{text_initial_yellow('l')}: Mark files to open {text_initial_yellow('location')} in file manager")
+    print(f"{text_initial_yellow('d')}: Mark files for {text_initial_yellow('deletion')}")
+    print(f"{text_initial_yellow('q')}: {text_initial_yellow('Quit')} application")
     while True:
-        match input(f"{TEXT_BLD}What now>{TEXT_RST}"):
+        match input(f"{text_bold('What now>')}"):
             case "l":
                 marking = "LOCATE"
                 break
@@ -133,15 +151,16 @@ while True:  # loops until quit
     while not exit_selection:
         # print dict. of unreferenced files:
         [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
-        print(f"\n{TEXT_BLD}*** Commands ***{TEXT_RST}")
-        print(f"{TEXT_YEL}0-{len(files_not_referenced)-1}{TEXT_RST}: Select file by number")
-        print(f"{TEXT_YEL}a{TEXT_RST}: Select {TEXT_YEL}a{TEXT_RST}ll files")
-        print(f"{TEXT_YEL}{marking[0].lower()}{TEXT_RST}: "
-              f"{TEXT_YEL}{marking.lower()[0]}{TEXT_RST}{marking.lower()[1:]} marked file(s)")
-        print(f"{TEXT_YEL}q{TEXT_RST}: {TEXT_YEL}Q{TEXT_RST}uit application")
+
+        print(text_bold('\n*** Commands ***'))
+        print(f"{text_initial_yellow('0')}-{text_yellow(f'{len(files_not_referenced)-1}')}: Select file by number")
+        print(f"{text_initial_yellow('a')}: Select {text_initial_yellow('all')} files")
+        print(f"{text_initial_yellow(f'{marking[0].lower()}')}: "
+              f"{text_initial_yellow(f'{marking.capitalize()}')} marked file(s)")
+        print(f"{text_initial_yellow('q')}: {text_initial_yellow('Quit')} application")
 
         while True:
-            user_input = input(f"{TEXT_BLD}{marking}>>{TEXT_RST}")
+            user_input = input(text_bold(f"{marking}>>"))
             if user_input.isnumeric():  # mark by number
                 if int(user_input) in range(len(files_not_referenced)):
                     files_not_referenced[int(user_input)]["marking"] = marking
