@@ -32,9 +32,15 @@ def text_initial_yellow(text: str) -> str:
 
 def text_red(text: str) -> str:
     """colors string red"""
-    TEXT_RED = "\033[31m"  # ANSI escape code for yellow text
+    TEXT_RED = "\033[31m"  # ANSI escape code for red text
     TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
     return f"{TEXT_RED}{text}{TEXT_RST}"
+
+def text_grey(text: str) -> str:
+    """colors string red"""
+    TEXT_GRY = "\033[90m"  # ANSI escape code for grey text
+    TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
+    return f"{TEXT_GRY}{text}{TEXT_RST}"
 
 
 # document parsing related:
@@ -111,13 +117,20 @@ def print_operation_info(operation_infos: List[Dict]) -> None:
     """prints dictionary with 'index', 'marking' and 'path' keys in tabular, formatted form."""
     # calculate  max width of 'index' to vertically align entries:
     max_width = max(len(str(item['index'])) for item in operation_infos)
-    # print via list comprehension
-    [
+
+    for item in operation_infos:
+        match item['marking']:
+            case "IGNORE":
+                text_color = text_grey
+            case "DELETE":
+                text_color = text_red
+            case _:
+                text_color = (lambda text: text)  # dummy
         print(
             f"{str(item['index']).rjust(max_width)}: "  # index right adjusted
-            f"[{item['marking']}] "  # marking in square brackets
+            f"[{text_color(item['marking'])}] "  # marking in square brackets
             f"{item['path']}"  # path as is
-        ) for item in operation_infos]
+        )
 
 
 # module tests
