@@ -101,7 +101,7 @@ while True:  # loops until quit
     files_not_referenced = [
         dict(
             index=idx,
-            marking=None,
+            marking="IGNORE",
             path=files_not_referenced[idx]
         ) for idx in range(len(files_not_referenced))
     ]
@@ -134,6 +134,7 @@ while True:  # loops until quit
         print(f"{text_initial_yellow('a')}: Select {text_initial_yellow('all')} files")
         print(f"{text_initial_yellow(f'{marking[0].lower()}')}: "
               f"{text_initial_yellow(f'{marking.capitalize()}')} marked file(s)")
+        print(f"{text_initial_yellow('c')}: {text_initial_yellow('cancel')} operation (marks all files as IGNORE)")
         print(f"{text_initial_yellow('q')}: {text_initial_yellow('Quit')} application")
 
         while True:
@@ -152,7 +153,11 @@ while True:  # loops until quit
                         open_in_file_browser(os.path.dirname(file["path"]))
                     if file["marking"] == "DELETE":
                         remove_file(file["path"])
-                exit_selection = True  # go back to marking ("What now"-input loop)
+                exit_selection = True  # go back to operation selection ("What now"-input loop)
+                break
+            elif user_input == "c":  # cancel (mark all file 'IGNORE')
+                # NOTE: 'IGNORE' is default marking and done when refreshing list at "What now"-input loop
+                exit_selection = True  # go back to operation selection ("What now"-input loop)
                 break
             elif user_input == "q":  # quit application
                 quit()
