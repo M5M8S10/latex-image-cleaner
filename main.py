@@ -1,6 +1,11 @@
 import os
 from project_utils import extract_referenced_files, list_files_recursive, open_in_file_browser, remove_file
 
+# color definitions for print-function:
+TEXT_BLD = "\033[1m"  # ANSI escape code for bold text
+TEXT_YEL = "\033[33m"  # ANSI escape code for yellow text
+TEXT_RST = "\033[0m"  # ANSI escape code to reset text color
+
 
 def print_header(text: str):
     """print header: prints parameter 'text' and underlines it with dashes."""
@@ -85,9 +90,6 @@ for idx in range(len(referenced_file_paths)):
 # Marking user marking
 while True:  # loops until quit
 
-    # color definitions for print-function:
-    TEXT_BOLD = "\033[1m"  # ANSI escape code for white text
-    TEXT_RESET = "\033[0m"  # ANSI escape code to reset text color
 
     # refresh list of files (in case files have been deleted; see below)
     files = list_files_recursive(path_to_image_dir)
@@ -112,48 +114,49 @@ while True:  # loops until quit
     # print dict. of unreferenced files:
     [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
 
-    print(f"\n{TEXT_BOLD}*** Commands ***{TEXT_RESET}")
-    print("G: Go to referenced file")
-    print("D: Delete referenced file")
-    print("Q: Quit")
+    print(f"\n{TEXT_BLD}*** Commands ***{TEXT_RST}")
+    print(f"{TEXT_YEL}l{TEXT_RST}: Mark files to open their {TEXT_YEL}l{TEXT_RST}ocation in the file manager")
+    print(f"{TEXT_YEL}d{TEXT_RST}: Mark files for {TEXT_YEL}d{TEXT_RST}eletion")
+    print(f"{TEXT_YEL}q{TEXT_RST}: {TEXT_YEL}Q{TEXT_RST}uit application")
     while True:
-        match input(f"{TEXT_BOLD}What now>{TEXT_RESET}"):
-            case "G":
-                marking = "GOTO"
+        match input(f"{TEXT_BLD}What now>{TEXT_RST}"):
+            case "l":
+                marking = "LOCATE"
                 break
-            case "D":
+            case "d":
                 marking = "DELETE"
                 break
-            case "Q":
+            case "q":
                 quit()
 
     exit_selection = False
     while not exit_selection:
         # print dict. of unreferenced files:
         [print(f"{file['index']}: [{file['marking']}] {file['path']}") for file in files_not_referenced]
-        print(f"\n{TEXT_BOLD}*** Commands ***{TEXT_RESET}")
-        print(f"0-{len(files_not_referenced)-1}: Select file by number")
-        print("A: Select all files")
-        print(f"{marking[0]}: {marking} marked files")
-        print("Q: Quit")
+        print(f"\n{TEXT_BLD}*** Commands ***{TEXT_RST}")
+        print(f"{TEXT_YEL}0-{len(files_not_referenced)-1}{TEXT_RST}: Select file by number")
+        print(f"{TEXT_YEL}a{TEXT_RST}: Select {TEXT_YEL}a{TEXT_RST}ll files")
+        print(f"{TEXT_YEL}{marking[0].lower()}{TEXT_RST}: "
+              f"{TEXT_YEL}{marking.lower()[0]}{TEXT_RST}{marking.lower()[1:]} marked file(s)")
+        print(f"{TEXT_YEL}q{TEXT_RST}: {TEXT_YEL}Q{TEXT_RST}uit application")
 
         while True:
-            user_input = input(f"{TEXT_BOLD}{marking}>>{TEXT_RESET}")
-            if user_input.isnumeric():
+            user_input = input(f"{TEXT_BLD}{marking}>>{TEXT_RST}")
+            if user_input.isnumeric():  # mark by number
                 if int(user_input) in range(len(files_not_referenced)):
                     files_not_referenced[int(user_input)]["marking"] = marking
                     break
-            elif user_input == "A":
+            elif user_input == "a":  # mark all
                 for file in files_not_referenced:
                     file["marking"] = marking
                 break
-            elif user_input == marking[0]:
+            elif user_input == marking[0].lower():  # confirm operation
                 for file in files_not_referenced:
-                    if file["marking"] == "GOTO":
+                    if file["marking"] == "LOCATE":
                         open_in_file_browser(os.path.dirname(file["path"]))
                     if file["marking"] == "DELETE":
                         remove_file(file["path"])
                 exit_selection = True  # go back to marking ("What now"-input loop)
                 break
-            elif user_input == "Q":
+            elif user_input == "q":  # quit application
                 quit()
