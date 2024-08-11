@@ -147,12 +147,17 @@ while True:  # loops until quit
                 for file in files_not_referenced:
                     file["marking"] = marking
                 break
-            elif user_input == marking[0].lower():  # confirm operation
-                for file in files_not_referenced:
-                    if file["marking"] == "LOCATE":
-                        open_in_file_browser(os.path.dirname(file["path"]))
-                    if file["marking"] == "DELETE":
-                        remove_file(file["path"])
+            elif user_input == "l":  # confirm operation 'locate'
+                # open all as 'LOCATE' marked files:
+                [
+                    open_in_file_browser(os.path.dirname(file["path"]))
+                    for file in files_not_referenced if file["marking"] == "LOCATE"
+                ]
+                exit_selection = True  # go back to operation selection ("What now"-input loop)
+                break
+            elif user_input == "d":  # confirm operation 'delete'
+                # delete all as 'DELETE' marked files:
+                [remove_file(file["path"]) for file in files_not_referenced if file["marking"] == "DELETE"]
                 exit_selection = True  # go back to operation selection ("What now"-input loop)
                 break
             elif user_input == "c":  # cancel (mark all file 'IGNORE')
