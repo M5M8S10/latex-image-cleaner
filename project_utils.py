@@ -82,16 +82,37 @@ def list_files_recursive(directory: str) -> List[str] | None:
     return all_files
 
 
-def open_in_file_browser(path: str):
-    """Opens path in file browser. file browser is platform dependant."""
-    if platform.system() == 'Windows':
-        subprocess.run(['explorer', os.path.normpath(path)])
-    elif platform.system() == 'Darwin':
-        subprocess.run(['open', path])
-    elif platform.system() == 'Linux':
-        subprocess.run(['xdg-open', path])
-    else:
-        raise OSError("Unsupported operating system")
+def open_in_file_browser(file_path: str):
+    """Open the file manager and highlight the specified file."""
+    # Normalize the path to ensure it's formatted correctly
+    file_path = os.path.normpath(file_path)
+
+    # Detect the current operating system
+    current_os = platform.system()
+
+    try:
+        if current_os == "Windows":
+            # Windows: Use explorer with /select to highlight the file
+            os.system(f'explorer /select,"{file_path}"')
+        elif current_os == "Darwin":
+            # macOS: Use open with -R to reveal and highlight the file
+            os.system(f'open -R "{file_path}"')
+        elif current_os == "Linux":
+            # Linux: Check for common desktop environments
+            if "KDE" in os.environ.get("XDG_CURRENT_DESKTOP", ""):
+                # KDE: Use Dolphin with --select to highlight the file
+                os.system(f'dolphin --select "{file_path}"')
+            elif "GNOME" in os.environ.get("XDG_CURRENT_DESKTOP", ""):
+                # GNOME: Use Nautilus with --select to highlight the file
+                os.system(f'nautilus --select "{file_path}"')
+            else:
+                # Fallback: Use xdg-open to open the directory (file won't be highlighted)
+                directory = os.path.dirname(file_path)
+                os.system(f'xdg-open "{directory}"')
+        else:
+            raise NotImplementedError(f"File selection not supported on {current_os}.")
+    except Exception as e:
+        print(f"An error occurred while trying to open the file: {e}")
 
 
 def remove_file(file_path: str) -> None:

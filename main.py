@@ -149,10 +149,7 @@ while True:  # loops until quit
                 break
             elif user_input == "l":  # confirm operation 'locate'
                 # open all as 'LOCATE' marked files:
-                [
-                    open_in_file_browser(os.path.dirname(file["path"]))
-                    for file in files_not_referenced if file["marking"] == "LOCATE"
-                ]
+                [open_in_file_browser(file["path"]) for file in files_not_referenced if file["marking"] == "LOCATE"]
                 exit_selection = True  # go back to operation selection ("What now"-input loop)
                 break
             elif user_input == "d":  # confirm operation 'delete'
