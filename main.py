@@ -1,10 +1,14 @@
 import os
-from project_utils import extract_referenced_files, list_files_recursive
-
-
-def print_header(text: str):
-    """print header: prints parameter 'text' and underlines it with dashes."""
-    print('\n' + text, '\n' + '-'*len(text))
+from project_utils import extract_referenced_files
+from project_utils import list_files_recursive
+from project_utils import open_in_file_browser
+from project_utils import remove_file
+from project_utils import print_operation_info
+from project_utils import print_header
+from project_utils import text_bold
+from project_utils import text_red
+from project_utils import text_yellow
+from project_utils import text_initial_yellow
 
 
 # get path from user
@@ -76,19 +80,86 @@ for idx in range(len(referenced_file_paths)):
             referenced_file_paths[idx] = absolute_path
         else:
             # TODO: proper error handling
-            RED = "\033[31m"
-            RESET = "\033[0m"
-            TEXT = f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"
-            print(f"{RED}{TEXT}{RESET}")
+            print(text_red(f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"))
 
-# Compare list of image paths to list of files in given directory (supposedly image dir):
-files_not_referenced = list()
-for file in files:  # generate list of not referenced files:
-    if file not in referenced_file_paths:
-        files_not_referenced.append(file)
 
-# print list of not referenced files:
-print_header(f"List of {len(files_not_referenced)} of {len(files)} file(s) within "
-             f"'{os.path.basename(path_to_image_dir)}'-directory "
-             f"are not referenced in the LaTeX-document '{os.path.basename(path_latex_doc)}':")
-[print(file) for file in files_not_referenced]
+# Marking user marking
+while True:  # loops until quit
+
+    # refresh list of files (in case files have been deleted; see below)
+    files = list_files_recursive(path_to_image_dir)
+    # generate list of not referenced files
+    # (diff of files in given - supposedly image - dir and found paths in document):
+    files_not_referenced = [file for file in files if file not in referenced_file_paths]
+
+    # print list of not referenced files:
+    print_header(f"List of {len(files_not_referenced)} of {len(files)} file(s) within "
+                 f"'{os.path.basename(path_to_image_dir)}'-directory "
+                 f"are not referenced in the LaTeX-document '{os.path.basename(path_latex_doc)}':")
+
+    # Make dictionary of diff for markings (user input):
+    files_not_referenced = [
+        dict(
+            index=idx,
+            marking="IGNORE",
+            path=files_not_referenced[idx]
+        ) for idx in range(len(files_not_referenced))
+    ]
+
+    # print dict. of unreferenced files:
+    print_operation_info(files_not_referenced)
+
+    print(text_bold('\n*** Commands ***'))
+    print(f"{text_initial_yellow('l')}: Mark files to open {text_initial_yellow('location')} in file manager")
+    print(f"{text_initial_yellow('d')}: Mark files for {text_initial_yellow('deletion')}")
+    print(f"{text_initial_yellow('q')}: {text_initial_yellow('Quit')} application")
+    while True:
+        match input(f"{text_bold('What now>')}"):
+            case "l":
+                marking = "LOCATE"
+                break
+            case "d":
+                marking = "DELETE"
+                break
+            case "q":
+                quit()
+
+    exit_selection = False
+    while not exit_selection:
+        # print dict. of unreferenced files:
+        print_operation_info(files_not_referenced)
+
+        print(text_bold('\n*** Commands ***'))
+        print(f"{text_initial_yellow('0')}-{text_yellow(f'{len(files_not_referenced)-1}')}: Select file by number")
+        print(f"{text_initial_yellow('a')}: Select {text_initial_yellow('all')} files")
+        print(f"{text_initial_yellow(f'{marking[0].lower()}')}: "
+              f"{text_initial_yellow(f'{marking.capitalize()}')} marked file(s)")
+        print(f"{text_initial_yellow('c')}: {text_initial_yellow('Cancel')} operation (marks all files as IGNORE)")
+        print(f"{text_initial_yellow('q')}: {text_initial_yellow('Quit')} application")
+
+        while True:
+            user_input = input(text_bold(f"{marking}>>"))
+            if user_input.isnumeric():  # mark by number
+                if int(user_input) in range(len(files_not_referenced)):
+                    files_not_referenced[int(user_input)]["marking"] = marking
+                    break
+            elif user_input == "a":  # mark all
+                for file in files_not_referenced:
+                    file["marking"] = marking
+                break
+            elif user_input == "l":  # confirm operation 'locate'
+                # open all as 'LOCATE' marked files:
+                [open_in_file_browser(file["path"]) for file in files_not_referenced if file["marking"] == "LOCATE"]
+                exit_selection = True  # go back to operation selection ("What now"-input loop)
+                break
+            elif user_input == "d":  # confirm operation 'delete'
+                # delete all as 'DELETE' marked files:
+                [remove_file(file["path"]) for file in files_not_referenced if file["marking"] == "DELETE"]
+                exit_selection = True  # go back to operation selection ("What now"-input loop)
+                break
+            elif user_input == "c":  # cancel (mark all file 'IGNORE')
+                # NOTE: 'IGNORE' is default marking and done when refreshing list at "What now"-input loop
+                exit_selection = True  # go back to operation selection ("What now"-input loop)
+                break
+            elif user_input == "q":  # quit application
+                quit()
