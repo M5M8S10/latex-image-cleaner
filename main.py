@@ -134,7 +134,7 @@ while True:  # loops until quit
         print(f"{text_initial_yellow('a')}: Select {text_initial_yellow('all')} files")
         print(f"{text_initial_yellow(f'{marking[0].lower()}')}: "
               f"{text_initial_yellow(f'{marking.capitalize()}')} marked file(s)")
-        print(f"{text_initial_yellow('c')}: {text_initial_yellow('cancel')} operation (marks all files as IGNORE)")
+        print(f"{text_initial_yellow('c')}: {text_initial_yellow('Cancel')} operation (marks all files as IGNORE)")
         print(f"{text_initial_yellow('q')}: {text_initial_yellow('Quit')} application")
 
         while True:
