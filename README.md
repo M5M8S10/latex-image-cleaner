@@ -1,8 +1,8 @@
-# LaTeX Image Path Extractor
+# _LaTeX Image Cleaner_
 
 ## Overview
 
-The LaTeX Image Path Extractor is a Python script designed to help clean the image assets folder of a LaTeX project.
+The _LaTeX Image Cleaner_ is a Python script designed to help clean the image assets folder of a LaTeX project.
 It achieves this by analyzing the LaTeX document, extracting all file names referenced by `\includegraphics`,
 and comparing them to the contents of the specified "assets" folder.
 
@@ -166,10 +166,10 @@ The maintainers of this repository hold **no liability** for any lost data. Use 
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/M5M8S10/latex-image-path-extractor
+   git clone https://github.com/M5M8S10/latex-image-cleaner
 2. Navigate to project directory:
    ```bash
-   cd latex-image-path-extractor
+   cd latex-image-cleaner
 3. Run the script and follow instructions in the command line interface (see [Usage](#usage)):
    ```bash
    python main.py
