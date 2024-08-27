@@ -9,11 +9,28 @@ from project_utils import text_bold
 from project_utils import text_red
 from project_utils import text_yellow
 from project_utils import text_initial_yellow
+import argparse
 
 
-# get path from user
+parser = argparse.ArgumentParser(
+    description="Shows and/or deletes unused image files of a LaTeX document.")
+parser.add_argument(
+    '--doc',
+    metavar='path/to/file.tex',
+    help="Path to the LaTeX document")
+parser.add_argument(
+    '--dir',
+    metavar='path/to/directory',
+    help="Path to the image directory")
+args = parser.parse_args()
+
+# get path to LaTeX document from user or parse from argument
 while True:  # loops until user input is valid
-    path_latex_doc = input("\nPath to tex file: ")
+    if args.doc:  # argument provided?
+        path_latex_doc = args.doc
+        args.doc = None  # clear argument to not assign from it again (in possible next iteration)
+    else:
+        path_latex_doc = input("\nPath to tex file: ")
     path_latex_doc = os.path.normpath(path_latex_doc)  # make platform independent
     # make relative paths absolute:
     if not os.path.isabs(path_latex_doc):  # is relative path?
@@ -45,9 +62,13 @@ print_header(f"Found {len(referenced_file_paths)} '\\includegraphics' "
              f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
 [print(path_to_image) for path_to_image in referenced_file_paths]
 
-# get path to directory where images of LaTeX document are stored:
+# get path to image directory from user or parse from argument
 while True:  # loops until user input is valid
-    path_to_image_dir = input("\nPath to image directory: ")
+    if args.dir:  # argument provided?
+        path_to_image_dir = args.dir
+        args.dir = None  # clear argument to not assign from it again (in possible next iteration)
+    else:
+        path_to_image_dir = input("\nPath to image directory: ")
     path_to_image_dir = os.path.normpath(path_to_image_dir)  # make platform independent
     # make relative paths absolute:
     if not os.path.isabs(path_to_image_dir):  # is relative path?
