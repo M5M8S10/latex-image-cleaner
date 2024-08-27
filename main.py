@@ -22,6 +22,10 @@ parser.add_argument(
     '--dir',
     metavar='path/to/directory',
     help="Path to the image directory")
+parser.add_argument(
+    '--verbose', '-v',
+    action='store_true',  # acts as True/False if this flag is used/not used
+    help='Lists found references in LaTeX document and files within image directory')
 args = parser.parse_args()
 
 # get path to LaTeX document from user or parse from argument
@@ -58,9 +62,10 @@ referenced_file_paths = [os.path.normpath(path) for path in referenced_file_path
 referenced_file_paths = list(set(referenced_file_paths))  # do this after normalizing of paths
 
 # output found image-paths
-print_header(f"Found {len(referenced_file_paths)} '\\includegraphics' "
-             f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
-[print(path_to_image) for path_to_image in referenced_file_paths]
+if args.verbose:
+    print_header(f"Found {len(referenced_file_paths)} '\\includegraphics' "
+                 f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
+    [print(path_to_image) for path_to_image in referenced_file_paths]
 
 # get path to image directory from user or parse from argument
 while True:  # loops until user input is valid
@@ -86,8 +91,9 @@ while True:  # loops until user input is valid
 # get list of files in given directory (supposedly image directory):
 files = list_files_recursive(path_to_image_dir)
 
-print_header(f"Found {len(files)} file(s) in directory '{path_to_image_dir}':")
-[print(file) for file in files]
+if args.verbose:
+    print_header(f"Found {len(files)} file(s) in directory '{path_to_image_dir}':")
+    [print(file) for file in files]
 
 # make referenced image paths in the LaTeX-document absolute
 # (assuming images referenced in LaTeX are in a subdirectory within the directory of the LaTeX document):
