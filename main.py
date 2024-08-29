@@ -23,6 +23,14 @@ parser.add_argument(
     metavar='path/to/directory',
     help="Path to the image directory")
 parser.add_argument(
+    '--diff',
+    action='store_true',  # acts as True/False if this flag is used/not used
+    help="Lists the files of the specified folder that are not used in the specified document")
+parser.add_argument(
+    '--delete',
+    action='store_true',  # acts as True/False if this flag is used/not used
+    help="Deletes the files of the specified folder that are not used in the specified document")
+parser.add_argument(
     '--verbose', '-v',
     action='store_true',  # acts as True/False if this flag is used/not used
     help='Lists found references in LaTeX document and files within image directory')
@@ -109,6 +117,21 @@ for idx in range(len(referenced_file_paths)):
             # TODO: proper error handling
             print(text_red(f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"))
 
+if args.diff or args.delete:
+    files_not_referenced = [file for file in files if file not in referenced_file_paths]
+    if len(files_not_referenced) == 0:
+        print(f"No unreferenced files found in '{os.path.basename(path_to_image_dir)}'-directory.")
+        quit()
+    if args.diff:
+        print(f"{len(files_not_referenced)} of {len(files)} file(s)"
+              f" within '{os.path.basename(path_to_image_dir)}'-directory not reverenced:")
+        [print(file) for file in files_not_referenced]
+    if args.delete:
+        print("Deleting unreferenced files...", end=" ")  # TODO: count and show number of deleted files
+        [remove_file(file) for file in files_not_referenced]
+        print(f"Done")
+    # after performing argument-based operations do not proceed to interactive operation and quit the program
+    quit()
 
 # Marking user marking
 while True:  # loops until quit
