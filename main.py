@@ -9,11 +9,40 @@ from project_utils import text_bold
 from project_utils import text_red
 from project_utils import text_yellow
 from project_utils import text_initial_yellow
+import argparse
 
 
-# get path from user
+parser = argparse.ArgumentParser(
+    description="Shows and/or deletes unused image files of a LaTeX document.")
+parser.add_argument(
+    '--doc',
+    metavar='path/to/file.tex',
+    help="Path to the LaTeX document")
+parser.add_argument(
+    '--dir',
+    metavar='path/to/directory',
+    help="Path to the image directory")
+parser.add_argument(
+    '--diff',
+    action='store_true',  # acts as True/False if this flag is used/not used
+    help="Lists the files of the specified folder that are not used in the specified document")
+parser.add_argument(
+    '--delete',
+    action='store_true',  # acts as True/False if this flag is used/not used
+    help="Deletes the files of the specified folder that are not used in the specified document")
+parser.add_argument(
+    '--verbose', '-v',
+    action='store_true',  # acts as True/False if this flag is used/not used
+    help='Lists found references in LaTeX document and files within image directory')
+args = parser.parse_args()
+
+# get path to LaTeX document from user or parse from argument
 while True:  # loops until user input is valid
-    path_latex_doc = input("\nPath to tex file: ")
+    if args.doc:  # argument provided?
+        path_latex_doc = args.doc
+        args.doc = None  # clear argument to not assign from it again (in possible next iteration)
+    else:
+        path_latex_doc = input("\nPath to tex file: ")
     path_latex_doc = os.path.normpath(path_latex_doc)  # make platform independent
     # make relative paths absolute:
     if not os.path.isabs(path_latex_doc):  # is relative path?
@@ -41,13 +70,18 @@ referenced_file_paths = [os.path.normpath(path) for path in referenced_file_path
 referenced_file_paths = list(set(referenced_file_paths))  # do this after normalizing of paths
 
 # output found image-paths
-print_header(f"Found {len(referenced_file_paths)} '\\includegraphics' "
-             f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
-[print(path_to_image) for path_to_image in referenced_file_paths]
+if args.verbose:
+    print_header(f"Found {len(referenced_file_paths)} '\\includegraphics' "
+                 f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
+    [print(path_to_image) for path_to_image in referenced_file_paths]
 
-# get path to directory where images of LaTeX document are stored:
+# get path to image directory from user or parse from argument
 while True:  # loops until user input is valid
-    path_to_image_dir = input("\nPath to image directory: ")
+    if args.dir:  # argument provided?
+        path_to_image_dir = args.dir
+        args.dir = None  # clear argument to not assign from it again (in possible next iteration)
+    else:
+        path_to_image_dir = input("\nPath to image directory: ")
     path_to_image_dir = os.path.normpath(path_to_image_dir)  # make platform independent
     # make relative paths absolute:
     if not os.path.isabs(path_to_image_dir):  # is relative path?
@@ -65,8 +99,9 @@ while True:  # loops until user input is valid
 # get list of files in given directory (supposedly image directory):
 files = list_files_recursive(path_to_image_dir)
 
-print_header(f"Found {len(files)} file(s) in directory '{path_to_image_dir}':")
-[print(file) for file in files]
+if args.verbose:
+    print_header(f"Found {len(files)} file(s) in directory '{path_to_image_dir}':")
+    [print(file) for file in files]
 
 # make referenced image paths in the LaTeX-document absolute
 # (assuming images referenced in LaTeX are in a subdirectory within the directory of the LaTeX document):
@@ -82,6 +117,21 @@ for idx in range(len(referenced_file_paths)):
             # TODO: proper error handling
             print(text_red(f"Conversion to absolute paths failed for reference '{referenced_file_paths[idx]}'"))
 
+if args.diff or args.delete:
+    files_not_referenced = [file for file in files if file not in referenced_file_paths]
+    if len(files_not_referenced) == 0:
+        print(f"No unreferenced files found in '{os.path.basename(path_to_image_dir)}'-directory.")
+        quit()
+    if args.diff:
+        print(f"{len(files_not_referenced)} of {len(files)} file(s)"
+              f" within '{os.path.basename(path_to_image_dir)}'-directory not reverenced:")
+        [print(file) for file in files_not_referenced]
+    if args.delete:
+        print("Deleting unreferenced files...", end=" ")  # TODO: count and show number of deleted files
+        [remove_file(file) for file in files_not_referenced]
+        print(f"Done")
+    # after performing argument-based operations do not proceed to interactive operation and quit the program
+    quit()
 
 # Marking user marking
 while True:  # loops until quit

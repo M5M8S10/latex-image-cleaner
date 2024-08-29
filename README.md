@@ -31,6 +31,10 @@ helping to remove unused files that often accumulate during document creation.
 
 ## Usage
 
+### Interactive Usage
+
+> **NOTE:** For a more streamlined experience, see [Command Line Usage](#command-line-usage) below.
+
 1. **Run the python script**
 
    Run the script via
@@ -134,6 +138,27 @@ helping to remove unused files that often accumulate during document creation.
    q: Quit application
    What now> q
    ```
+
+### Command Line Usage
+
+The _latex-image-cleaner_ can be executed with command-line arguments for a more streamlined,
+non-interactive experience.<br>
+All arguments are optional, and if they are not provided,
+the script will query for the missing information interactively as described in [Interactive Usage](#interactive-usage).
+
+#### Available Command Line Arguments
+
+| Argument             | Description                                                                                                                                                                                  |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `--doc <path>`       | Specifies the path to the LaTeX document from which image paths should be extracted.                                                                                                         |
+| `--dir <path>`       | Specifies the directory to compare against the image paths extracted from the LaTeX document.                                                                                                |
+| `--delete`           | Deletes **all files** in the specified directory that are not referenced in the LaTeX document.<br> **WARNING:** Read [Disclaimer](#-disclaimer) and [Limitations](#limitations) before use. |
+| `--diff`             | Lists all files in the specified directory that are not referenced in the LaTeX document.                                                                                                    |
+| `--verbose`, `-v`    | Prints detailed information, including the found references in the LaTeX document and the files in the directory.                                                                            |
+
+> **NOTE:** It is recommended to `--diff` before `--delete` to check which files will be deleted.
+
+> **NOTE:** For additional information use `python main.py --help`
 
 ## Limitations
 - Only parses paths used by `\includegraphics`.
