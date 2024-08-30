@@ -45,7 +45,7 @@ while True:  # loops until user input is valid
         path_latex_doc = input("\nPath to tex file: ")
     path_latex_doc = os.path.normpath(path_latex_doc)  # make platform independent
     # make relative paths absolute:
-    if not os.path.isabs(path_latex_doc):  # is relative path?
+    if not os.path.isabs(path_latex_doc):  # is the path relative?
         path_latex_doc = os.path.abspath(path_latex_doc)
 
     # NOTE: works with file name (if in current dir), relative and absolute paths
@@ -59,12 +59,12 @@ while True:  # loops until user input is valid
 
 # extract image paths
 # ALTERNATIVE: maybe it is better to list every image reference (also duplicates) with line number (dictionary) and
-#  filter out duplicates/current-path_latex_doc-notation only when user wants to remove unreferenced images
+#  filter out duplicates/current-path_latex_doc-notation only when a user wants to remove unreferenced images
 #  in a given directory (user input).
 files_in_doc = extract_referenced_files(path_latex_doc)
 
 # make path notation from LaTeX-doc (unix-like) platform dependant, to fit with user inputs
-# (also removes 'current folder'-notation, i.e. "./" ; optional in LaTeX documents):
+# (also removes 'current folder'-notation, i.e. "./", which is optional in LaTeX documents):
 files_in_doc = [os.path.normpath(path) for path in files_in_doc]
 # remove duplicates:
 files_in_doc = list(set(files_in_doc))  # do this after normalizing of paths
@@ -75,7 +75,7 @@ if args.verbose:
                  f"in LaTeX document '{os.path.basename(path_latex_doc)}':")
     [print(path_to_image) for path_to_image in files_in_doc]
 
-# get path to image directory from user or parse from argument
+# get the path to image directory from user or parse from argument
 while True:  # loops until user input is valid
     if args.dir:  # argument provided?
         path_to_image_dir = args.dir
@@ -84,10 +84,10 @@ while True:  # loops until user input is valid
         path_to_image_dir = input("\nPath to image directory: ")
     path_to_image_dir = os.path.normpath(path_to_image_dir)  # make platform independent
     # make relative paths absolute:
-    if not os.path.isabs(path_to_image_dir):  # is relative path?
+    if not os.path.isabs(path_to_image_dir):  # is the path relative?
         path_to_image_dir = os.path.abspath(path_to_image_dir)
 
-    # NOTE: works with  relative and absolute paths
+    # NOTE: works with relative and absolute paths
     # error handling:
     if not os.path.exists(path_to_image_dir):  # existence
         print("No such path.")
@@ -96,7 +96,7 @@ while True:  # loops until user input is valid
     else:
         break  # user input is an existing directory
 
-# get list of files in given directory (supposedly image directory):
+# get the files in the given "image" directory as a list:
 files_in_dir = list_files_recursive(path_to_image_dir)
 
 if args.verbose:
@@ -108,7 +108,7 @@ if args.verbose:
 # TODO: take into account when relative file paths go up a directory, e.g. '../..'
 # TODO: take into account the optional '\graphicspath{ {./path/to/images/} }-LaTeX-command
 for idx in range(len(files_in_doc)):
-    if not os.path.isabs(files_in_doc[idx]):  # is relative path
+    if not os.path.isabs(files_in_doc[idx]):  # is the path relative?
         absolute_path = os.path.join(os.path.dirname(path_latex_doc), files_in_doc[idx])
         # check if making paths in LaTeX document absolute is plausible
         if os.path.exists(absolute_path):
@@ -124,7 +124,7 @@ if args.diff or args.delete:
         quit()
     if args.diff:
         print(f"{len(files_not_referenced)} of {len(files_in_dir)} file(s)"
-              f" within '{os.path.basename(path_to_image_dir)}'-directory not reverenced:")
+              f" within '{os.path.basename(path_to_image_dir)}'-directory not referenced:")
         [print(file) for file in files_not_referenced]
     if args.delete:
         print("Deleting unreferenced files...", end=" ")  # TODO: count and show number of deleted files
@@ -138,8 +138,8 @@ while True:  # loops until quit
 
     # refresh list of files (in case files have been deleted; see below)
     files_in_dir = list_files_recursive(path_to_image_dir)
-    # generate list of not referenced files
-    # (diff of files in given - supposedly image - dir and found paths in document):
+    # generate a list of not referenced files
+    # (diff of files in given - supposedly image - dir and found paths in the document):
     files_not_referenced = [file for file in files_in_dir if file not in files_in_doc]
 
     # print list of not referenced files:
@@ -208,7 +208,7 @@ while True:  # loops until quit
                 exit_selection = True  # go back to operation selection ("What now"-input loop)
                 break
             elif user_input == "c":  # cancel (mark all file 'IGNORE')
-                # NOTE: 'IGNORE' is default marking and done when refreshing list at "What now"-input loop
+                # NOTE: 'IGNORE' is default marking and done when refreshing the list at "What now"-input loop
                 exit_selection = True  # go back to operation selection ("What now"-input loop)
                 break
             elif user_input == "q":  # quit application
