@@ -118,18 +118,24 @@ for idx in range(len(files_in_doc)):
             print(text_red(f"Conversion to absolute paths failed for reference '{files_in_doc[idx]}'"))
 
 if args.diff or args.delete:
+
     files_not_referenced = [file for file in files_in_dir if file not in files_in_doc]
+
+    # quit program if there is nothing to do i.e., no unused files in specified directory.
     if len(files_not_referenced) == 0:
         print(f"No unreferenced files found in '{os.path.basename(path_to_image_dir)}'-directory.")
         quit()
+
     if args.diff:
         print(f"{len(files_not_referenced)} of {len(files_in_dir)} file(s)"
               f" within '{os.path.basename(path_to_image_dir)}'-directory not referenced:")
         [print(file) for file in files_not_referenced]
+
     if args.delete:
         print("Deleting unreferenced files...", end=" ")  # TODO: count and show number of deleted files
         [remove_file(file) for file in files_not_referenced]
         print(f"Done")
+
     # after performing argument-based operations do not proceed to interactive operation and quit the program
     quit()
 
@@ -141,6 +147,11 @@ while True:  # loops until quit
     # generate a list of not referenced files
     # (diff of files in given - supposedly image - dir and found paths in the document):
     files_not_referenced = [file for file in files_in_dir if file not in files_in_doc]
+
+    # quit program if there is nothing to do i.e., no unused files in specified directory.
+    if len(files_not_referenced) == 0:
+        print(f"No unreferenced files found in '{os.path.basename(path_to_image_dir)}'-directory.")
+        quit()
 
     # print list of not referenced files:
     print_header(f"List of {len(files_not_referenced)} of {len(files_in_dir)} file(s) within "
