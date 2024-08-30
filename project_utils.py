@@ -136,7 +136,10 @@ def remove_file(file_path: str) -> None:
 # right adjusted print:
 def print_operation_info(operation_infos: List[Dict]) -> None:
     """prints dictionary with 'index', 'marking' and 'path' keys in tabular, formatted form."""
-    # calculate  max width of 'index' to vertically align entries:
+    # calculate max width of 'index' to vertically align entries:
+
+    if not operation_infos: return  # empty list
+
     max_width = max(len(str(item['index'])) for item in operation_infos)
 
     for item in operation_infos:
